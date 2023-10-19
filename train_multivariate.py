@@ -1,5 +1,6 @@
 import tqdm
 import torch
+import pickle
 import numpy as np
 import mpl_toolkits.mplot3d.art3d as art3d
 from matplotlib.patches import Ellipse, Rectangle
@@ -16,10 +17,10 @@ from mle_mc_dropout.losses import MultivariateGaussianNLL
 # plot settings
 plt.rcParams.update(
     {
-    	'font.size': 12,
-        'text.usetex': False,
-        'font.family': 'stixgeneral',
-        'mathtext.fontset': 'stix',
+    	"font.size": 12,
+        "text.usetex": False,
+        "font.family": "stixgeneral",
+        "mathtext.fontset": "stix",
     }
 )
 
@@ -37,7 +38,7 @@ def confidence_ellipse(x, y, z, cov, ax, n_std=1.0, **kwargs):
 	return
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	cmap = plt.cm.bone_r
 
 	EPOCHS = 200
@@ -98,14 +99,14 @@ if __name__ == '__main__':
 
 	""" Visualizing the experiment
 	"""
-	ax = plt.axes(projection='3d')
+	ax = plt.axes(projection="3d")
 	ax.scatter3D(test_data.X, test_data.Y, test_data.Z, marker="+", color="black")
 
 	# plot in-distribution limits
-	rect0 = Rectangle((-20, -20), 40, 40, fill=False, hatch='X')
+	rect0 = Rectangle((-20, -20), 40, 40, fill=False, hatch="X")
 	ax.add_patch(rect0)
 	art3d.pathpatch_2d_to_3d(rect0, z=in_lower, zdir="x")
-	rect1 = Rectangle((-20, -20), 40, 40, fill=False, hatch='X')
+	rect1 = Rectangle((-20, -20), 40, 40, fill=False, hatch="X")
 	ax.add_patch(rect1)
 	art3d.pathpatch_2d_to_3d(rect1, z=in_upper, zdir="x")
 
@@ -123,7 +124,7 @@ if __name__ == '__main__':
 	# # plot ground truth aleatoric uncertainty
 	# for x in test_data.X:
 	# 	confidence_ellipse(x, x * np.sin(x), x * np.cos(x), x * 0.3 * np.array([[0.8, -0.3], [-0.3, 0.8]]), ax,
-	# 		fill=None, edgecolor='black', linestyle='--')
+	# 		fill=None, edgecolor="black", linestyle="--")
 
 	fig = plt.gcf()
 	ax.set_xlim(out_lower, out_upper)
@@ -135,9 +136,9 @@ if __name__ == '__main__':
 	ax.locator_params(axis="z", nbins=5)
 	plt.tight_layout()
 	# plt.legend()
-	import pickle
-	pickle.dump(fig, open('mv_der.fig.pickle', 'wb'))
+	pickle.dump(fig, open("mv_der.fig.pickle", "wb"))
 	plt.show()
+	plt.clf()
 	
 	""" Creating and plotting calibration plots
 	"""
@@ -149,17 +150,18 @@ if __name__ == '__main__':
 	pcal = []
 	for p in np.arange(0.1, 1.1, 0.1):
 		pcal += [np.sum(pcdf <= p, axis=0) / max(1, len(pcdf))]
-	plt.plot(np.arange(0.1, 1.1, 0.1), np.arange(0.1, 1.1, 0.1), color='black', linestyle='--')
+	plt.plot(np.arange(0.1, 1.1, 0.1), np.arange(0.1, 1.1, 0.1), color="black", linestyle="--")
 	plt.plot(np.arange(0.1, 1.1, 0.1), pcal)
-	plt.title(r'Calibration plot of diagonal elements of $\mathbb{E} [\Sigma]$')
+	plt.title(r"Calibration plot of diagonal elements of $\mathbb{E} [\Sigma]$")
 
-	plt.locator_params(axis='both', nbins=3) 
+	plt.locator_params(axis="both", nbins=3) 
 	plt.xticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
 	plt.yticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
-	plt.show()
+	plt.savefig(f"images/{net.__class__.__name__}_calibration.svg")
+	plt.clf()
 
 	""" Plotting loss curve
 	"""
 	plt.plot(losses)
-	plt.show()
+	plt.savefig(f"images/{net.__class__.__name__}_loss.svg")
 	plt.clf()

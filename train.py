@@ -14,15 +14,15 @@ from mle_mc_dropout.losses import UnivariateL1Loss, UnivariateL2Loss, BetaNLLLos
 # plot settings
 plt.rcParams.update(
     {
-    	'font.size': 12,
-        'text.usetex': False,
-        'font.family': 'stixgeneral',
-        'mathtext.fontset': 'stix',
+    	"font.size": 12,
+        "text.usetex": False,
+        "font.family": "stixgeneral",
+        "mathtext.fontset": "stix",
     }
 )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	EPOCHS = 120
 
 	in_lower = -2.0
@@ -41,11 +41,11 @@ if __name__ == '__main__':
 	    "weight_decay": 1e-2,
 	    "amsgrad": False}
 
-	# net = UnivariateDerNet()
-	# criterion = UnivariateEvidentialRegressionLoss()
+	net = UnivariateDerNet()
+	criterion = UnivariateEvidentialRegressionLoss()
 
-	net = UnivariateKenNet()
-	criterion = BetaNLLLoss()
+	# net = UnivariateKenNet()
+	# criterion = UnivariateL1Loss()
 
 	device = get_device()
 	optimizer = torch.optim.AdamW(net.parameters(), **optimizer_params)
@@ -103,8 +103,9 @@ if __name__ == '__main__':
 	
 	fig = plt.gcf()
 	plt.locator_params(axis="y", nbins=5)
-	plt.tight_layout()
-	plt.show()
+	# plt.tight_layout()
+	plt.savefig(f"images/{net.__class__.__name__}_performance.svg")
+	plt.clf()
 
 	""" Creating and plotting calibration plots
 	"""
@@ -117,18 +118,19 @@ if __name__ == '__main__':
 	pcal = []
 	for p in np.arange(0.1, 1.1, 0.1):
 		pcal += [np.sum(pcdf <= p, axis=0) / max(1, len(pcdf))]
-	plt.plot(np.arange(0.1, 1.1, 0.1), np.arange(0.1, 1.1, 0.1), color='black', linestyle='--')
+	plt.plot(np.arange(0.1, 1.1, 0.1), np.arange(0.1, 1.1, 0.1), color="black", linestyle="--")
 	plt.plot(np.arange(0.1, 1.1, 0.1), pcal)
-	plt.title(r'Calibration plot of $\mathbb{E} [\Sigma]$')
+	plt.title(r"Calibration plot of $\mathbb{E} [\Sigma]$")
 
-	plt.locator_params(axis='both', nbins=3) 
+	plt.locator_params(axis="both", nbins=3) 
 	plt.xticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
 	plt.yticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
-	plt.show()
+	plt.savefig(f"images/{net.__class__.__name__}_calibration.svg")
+	plt.clf()
 
 	""" Plotting loss curve
 	"""
 	plt.plot(losses)
-	plt.show()
+	plt.savefig(f"images/{net.__class__.__name__}_loss.svg")
 
 	plt.clf()
