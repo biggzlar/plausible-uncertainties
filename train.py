@@ -23,6 +23,8 @@ plt.rcParams.update(
 
 
 if __name__ == "__main__":
+	device = get_device()
+	print(f"Working on {device}!")
 	EPOCHS = 120
 
 	in_lower = -2.0
@@ -42,6 +44,7 @@ if __name__ == "__main__":
 	    "amsgrad": False}
 
 	net = UnivariateDerNet()
+	net.to(device)
 	criterion = UnivariateEvidentialRegressionLoss()
 
 	# net = UnivariateKenNet()
@@ -67,13 +70,13 @@ if __name__ == "__main__":
 			optimizer.step()
 			scheduler.step()
 
-		t.set_description(f"val. loss:{loss.detach().numpy():.2f} ")
-		t.refresh()
-		losses += [loss.detach().numpy()]
-
 		net.eval()
 
-		mu, aleatoric, epistemic, meta_aleatoric, output_params = net.get_prediction(torch.Tensor(np.expand_dims(test_data.X, axis=1)))
+		mu, aleatoric, epistemic, meta_aleatoric, output_params = net.get_prediction(torch.Tensor(np.expand_dims(test_data.X, axis=1)).to(device))
+
+		t.set_description(f"val. loss:{loss.detach().cpu().numpy():.2f} ")
+		t.refresh()
+		losses += [loss.detach().cpu().numpy()]
 
 	""" Visualizing the experiment
 	"""

@@ -68,9 +68,9 @@ class UnivariateKenNet(nn.Module):
 		mu, log_aleatoric = torch.split(mc_mu, split_size_or_sections=1, dim=-1)
 		epistemic, meta_log_aleatoric = torch.split(mc_var, split_size_or_sections=1, dim=-1)
 
-		mu = mu.detach().numpy().squeeze()
-		aleatoric = np.sqrt(np.exp(log_aleatoric.detach().numpy().squeeze()))
-		epistemic = epistemic.detach().numpy().squeeze()
+		mu = mu.detach().cpu().numpy().squeeze()
+		aleatoric = np.sqrt(np.exp(log_aleatoric.detach().cpu().numpy().squeeze()))
+		epistemic = epistemic.detach().cpu().numpy().squeeze()
 
 		return mu, aleatoric, epistemic, meta_log_aleatoric, None
 
@@ -131,9 +131,9 @@ class MultivariateKenNet(nn.Module):
 		mc_L = torch.tril(mc_L, diagonal=-1) + torch.diag_embed(1e-2 + self.evidence(torch.diagonal(mc_L, dim1=-2, dim2=-1)))
 		L = torch.mean(mc_L, dim=0)
 		
-		mu = torch.mean(mc_mu, dim=0).detach().numpy().squeeze()
-		aleatoric = torch.cholesky_solve(L, torch.eye(self.p)).detach().numpy()
-		epistemic = self.batch_covariance(mc_mu, batch_size).detach().numpy()
+		mu = torch.mean(mc_mu, dim=0).detach().cpu().numpy().squeeze()
+		aleatoric = torch.cholesky_solve(L, torch.eye(self.p)).detach().cpu().numpy()
+		epistemic = self.batch_covariance(mc_mu, batch_size).detach().cpu().numpy()
 		meta_aleatoric = 0.
 
 		return mu, aleatoric, epistemic, meta_aleatoric, None

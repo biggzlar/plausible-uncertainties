@@ -41,10 +41,10 @@ class UnivariateDerNet(nn.Module):
 
 		gamma, nu, alpha, beta = self.hidden(x)
 
-		gamma = gamma.detach().numpy().squeeze()
-		nu = nu.detach().numpy().squeeze()
-		alpha = alpha.detach().numpy().squeeze()
-		beta = beta.detach().numpy().squeeze()
+		gamma = gamma.detach().cpu().numpy().squeeze()
+		nu = nu.detach().cpu().numpy().squeeze()
+		alpha = alpha.detach().cpu().numpy().squeeze()
+		beta = beta.detach().cpu().numpy().squeeze()
 
 		aleatoric = np.sqrt(beta * np.reciprocal(alpha - 1 + 1e-8))
 		epistemic = np.sqrt(beta * np.reciprocal((nu * (alpha - 1)) + 1e-8))
@@ -90,10 +90,10 @@ class MultivariateDerNet(nn.Module):
 
 		mu, nu, kappa, L = self.hidden(x)
 
-		mu = mu.detach().numpy().squeeze()
-		nu = nu.detach().numpy().squeeze()
-		kappa = kappa.detach().numpy().squeeze()
-		L = L.detach().numpy().squeeze()
+		mu = mu.detach().cpu().numpy().squeeze()
+		nu = nu.detach().cpu().numpy().squeeze()
+		kappa = kappa.detach().cpu().numpy().squeeze()
+		L = L.detach().cpu().numpy().squeeze()
 
 		sum_of_pairwise_deviation_products = np.einsum('bik, bkl -> bil', L, np.transpose(L, (0, -1, -2)))
 		aleatoric = np.reciprocal(nu[:, None, None] - self.p - 1 + 1e-8) * sum_of_pairwise_deviation_products

@@ -39,6 +39,8 @@ def confidence_ellipse(x, y, z, cov, ax, n_std=1.0, **kwargs):
 
 
 if __name__ == "__main__":
+	device = get_device()
+	print(f"Working on {device}!")
 	cmap = plt.cm.bone_r
 
 	EPOCHS = 200
@@ -64,12 +66,12 @@ if __name__ == "__main__":
 
 	# choice of model/method
 	net = MultivariateDerNet(p=2)
+	net.to(device)
 	criterion = MultivariateEvidentialRegressionLoss()
 
 	# net = MultivariateKenNet(p=2)
 	# criterion = MultivariateGaussianNLL()
 
-	device = get_device()
 	optimizer = torch.optim.AdamW(net.parameters(), **optimizer_params)
 	scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=optimizer_params["lr"], steps_per_epoch=len(train_loader), epochs=EPOCHS)
 
@@ -91,11 +93,11 @@ if __name__ == "__main__":
 
 		net.eval()
 
-		mu, aleatoric, epistemic, meta_aleatoric, output_params = net.get_prediction(torch.Tensor(np.expand_dims(test_data.X, axis=1)))
+		mu, aleatoric, epistemic, meta_aleatoric, output_params = net.get_prediction(torch.Tensor(np.expand_dims(test_data.X, axis=1)).to(device))
 		
-		t.set_description(f"val. loss: {loss.detach().numpy():.2f}")
+		t.set_description(f"val. loss: {loss.detach().cpu().numpy():.2f}")
 		t.refresh()
-		losses += [loss.detach().numpy()]
+		losses += [loss.detach().cpu().numpy()]
 
 	""" Visualizing the experiment
 	"""
