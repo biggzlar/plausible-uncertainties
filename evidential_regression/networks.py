@@ -91,9 +91,9 @@ class MultivariateDerNet(nn.Module):
 		mu, nu, kappa, L = self.hidden(x)
 
 		mu = mu.detach().cpu().numpy().squeeze()
-		nu = nu.detach().cpu().numpy().squeeze()
+		nu = nu.detach().cpu().numpy().squeeze(axis=1)
 		kappa = kappa.detach().cpu().numpy().squeeze()
-		L = L.detach().cpu().numpy().squeeze()
+		L = L.detach().cpu().numpy()
 
 		sum_of_pairwise_deviation_products = np.einsum('bik, bkl -> bil', L, np.transpose(L, (0, -1, -2)))
 		aleatoric = np.reciprocal(nu[:, None, None] - self.p - 1 + 1e-8) * sum_of_pairwise_deviation_products
