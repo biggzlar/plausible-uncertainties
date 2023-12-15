@@ -17,7 +17,14 @@ def NIG_NLL(y_true, gamma, nu, alpha, beta, reduce=False):
     return torch.mean(nll) if reduce else nll
 
 
-def NIG_REG(y_true, gamma, alpha, beta, reduce=False):
+def NIG_REG(y_true, gamma, nu, alpha, beta, reduce=False):
+    """ The regularizer as proposed by Amini et al. is adapted to maximize
+        calibration and accurate recovery of the aleatoric component. Excluding 
+        $\nu$ from the total evidence term improves aleatoric uncertainty estimates.
+
+        Dividing the error term by the aleatoric component may increase 
+        calibration scores in some instances.
+    """
     error = torch.abs(y_true - gamma) / (beta * torch.reciprocal(alpha - 1.0))
     evi = 2 * alpha
     reg = error * evi
@@ -38,7 +45,7 @@ class UnivariateEvidentialRegressionLoss(torch.nn.Module):
             beta = beta[mask]
 
         loss_nll = NIG_NLL(y_true, gamma, nu, alpha, beta)
-        loss_reg = NIG_REG(y_true, gamma, alpha, beta)
+        loss_reg = NIG_REG(y_true, gamma, nu, alpha, beta)
         loss = torch.mean(loss_nll + coeff * loss_reg)
         return loss
 
