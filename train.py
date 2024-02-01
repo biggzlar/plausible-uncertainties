@@ -107,7 +107,8 @@ if __name__ == "__main__":
 	fig = plt.gcf()
 	plt.locator_params(axis="y", nbins=5)
 	# plt.tight_layout()
-	plt.savefig(f"images/{net.__class__.__name__}_performance.svg")
+	plt.show()
+	# plt.savefig(f"images/{net.__class__.__name__}_performance.svg")
 	plt.clf()
 
 	""" Creating and plotting calibration plots
@@ -128,12 +129,15 @@ if __name__ == "__main__":
 	plt.locator_params(axis="both", nbins=3) 
 	plt.xticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
 	plt.yticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
-	plt.savefig(f"images/{net.__class__.__name__}_calibration.svg")
+	plt.show()
+	# plt.savefig(f"images/{net.__class__.__name__}_calibration.svg")
 	plt.clf()
 
 	""" Plotting loss curve
 	"""
+	plt.title(r"NLL loss")
 	plt.plot(losses)
-	plt.savefig(f"images/{net.__class__.__name__}_loss.svg")
+	plt.show()
+	# plt.savefig(f"images/{net.__class__.__name__}_loss.svg")
 
 	plt.clf()

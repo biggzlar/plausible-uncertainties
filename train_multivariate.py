@@ -66,11 +66,11 @@ if __name__ == "__main__":
 
 	# choice of model/method
 	net = MultivariateDerNet(p=2)
-	net.to(device)
 	criterion = MultivariateEvidentialRegressionLoss()
 
 	# net = MultivariateKenNet(p=2)
 	# criterion = MultivariateGaussianNLL()
+	net.to(device)
 
 	optimizer = torch.optim.AdamW(net.parameters(), **optimizer_params)
 	scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=optimizer_params["lr"], steps_per_epoch=len(train_loader), epochs=EPOCHS)
@@ -159,11 +159,14 @@ if __name__ == "__main__":
 	plt.locator_params(axis="both", nbins=3) 
 	plt.xticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
 	plt.yticks([0.1, 0.5, 1.0], [0.1, 0.5, 1.0])
-	plt.savefig(f"images/{net.__class__.__name__}_calibration.svg")
+	plt.show()
+	# plt.savefig(f"images/{net.__class__.__name__}_calibration.svg")
 	plt.clf()
 
 	""" Plotting loss curve
 	"""
+	plt.title(r"NLL loss")
 	plt.plot(losses)
-	plt.savefig(f"images/{net.__class__.__name__}_loss.svg")
+	plt.show()
+	# plt.savefig(f"images/{net.__class__.__name__}_loss.svg")
 	plt.clf()
