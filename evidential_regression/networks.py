@@ -11,16 +11,10 @@ class UnivariateDerNet(nn.Module):
 
 		self.hidden = nn.Sequential(
 			nn.Linear(in_features=1, out_features=128),
-			# nn.ReLU6(),
-			# nn.Tanh(),
 			nn.Mish(),
 			nn.Linear(in_features=128, out_features=128),
-			# nn.ReLU6(),
-			# nn.Tanh(),
 			nn.Mish(),
 			nn.Linear(in_features=128, out_features=128),
-			# nn.ReLU6(),
-			# nn.Tanh(),
 			nn.Mish(),
 			nn.Linear(in_features=128, out_features=128),
 			DenseInverseGamma(in_features=128, units=1)
