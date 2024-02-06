@@ -35,7 +35,7 @@ class DenseInverseWishart(torch.nn.Module):
         self.params = torch.nn.Linear(in_features=in_features, out_features=2)
 
         self.n_decomposit_units = int((1 + self.p) * self.p / 2)
-        self.L_decomposit = torch.nn.Linear(in_features=in_features, out_features=self.p**2)
+        self.L_decomposit = torch.nn.Linear(in_features=in_features, out_features=self.n_decomposit_units)
         
         self.softplus = torch.nn.Softplus()
         self.mu_activation = mu_activation
@@ -53,13 +53,13 @@ class DenseInverseWishart(torch.nn.Module):
         nu = self.evidence(lognu) + self.p + 1
         kappa = self.evidence(logkappa) + 1
         
-        L = self.L_decomposit(x)
-        L = L.view(-1, self.p, self.p)
-        L = torch.tril(L, diagonal=-1) + torch.diag_embed(1e-2 + self.evidence(torch.diagonal(L, dim1=-2, dim2=-1)))
+        # L = self.L_decomposit(x)
+        # L = L.view(-1, self.p, self.p)
+        # L = torch.tril(L, diagonal=-1) + torch.diag_embed(1e-2 + self.evidence(torch.diagonal(L, dim1=-2, dim2=-1)))
 
-        # non_zeros = self.L_decomposit(x)
-        # L = torch.zeros((x.shape[0], self.p, self.p))
-        # L[:, self.tril_indices[0], self.tril_indices[1]] = non_zeros
-        # L[:, self.diag_indices, self.diag_indices] = self.evidence(L[:, self.diag_indices, self.diag_indices])
+        non_zeros = self.L_decomposit(x)
+        L = torch.zeros((x.shape[0], self.p, self.p))
+        L[:, self.tril_indices[0], self.tril_indices[1]] = non_zeros
+        L[:, self.diag_indices, self.diag_indices] = self.evidence(L[:, self.diag_indices, self.diag_indices])
 
         return mu, nu, kappa, L
