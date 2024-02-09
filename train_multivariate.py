@@ -45,13 +45,13 @@ if __name__ == "__main__":
 
 	EPOCHS = 200
 
-	in_lower = -10.0
-	in_upper = 4.0
-	out_lower = -20.0
-	out_upper = 10.0
+	ID_lower = -10.0
+	ID_upper = 4.0
+	OOD_lower = -20.0
+	OOD_upper = 10.0
 
-	train_data = MultivariateDummyData(N=8000, X_range=(in_lower, in_upper))
-	test_data  = MultivariateDummyData(N=200, X_range=(out_lower, out_upper))
+	train_data = MultivariateDummyData(N=8000, X_range=(ID_lower, ID_upper))
+	test_data  = MultivariateDummyData(N=200, X_range=(OOD_lower, OOD_upper))
 
 	train_loader = torch.utils.data.DataLoader(train_data, batch_size=128, shuffle=True)
 	test_loader = torch.utils.data.DataLoader(test_data, batch_size=32)
@@ -107,10 +107,10 @@ if __name__ == "__main__":
 	# plot in-distribution limits
 	rect0 = Rectangle((-20, -20), 40, 40, fill=False, hatch="X")
 	ax.add_patch(rect0)
-	art3d.pathpatch_2d_to_3d(rect0, z=in_lower, zdir="x")
+	art3d.pathpatch_2d_to_3d(rect0, z=ID_lower, zdir="x")
 	rect1 = Rectangle((-20, -20), 40, 40, fill=False, hatch="X")
 	ax.add_patch(rect1)
-	art3d.pathpatch_2d_to_3d(rect1, z=in_upper, zdir="x")
+	art3d.pathpatch_2d_to_3d(rect1, z=ID_upper, zdir="x")
 
 	# plot aleatoric (and epistemic) uncertainty
 	for j in range(len(test_data)):
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 	# 		fill=None, edgecolor="black", linestyle="--")
 
 	fig = plt.gcf()
-	ax.set_xlim(out_lower, out_upper)
+	ax.set_xlim(OOD_lower, OOD_upper)
 	ax.set_ylim(-20, 20)
 	ax.set_zlim(-20, 20)
 	
@@ -144,9 +144,9 @@ if __name__ == "__main__":
 	
 	""" Creating and plotting calibration plots
 	"""
-	in_YZ = test_YZ[np.logical_and(test_data.X > in_lower, test_data.X < in_upper)]
-	in_mu = mu[np.logical_and(test_data.X > in_lower, test_data.X < in_upper)]
-	in_al = aleatoric[np.logical_and(test_data.X > in_lower, test_data.X < in_upper)]
+	in_YZ = test_YZ[np.logical_and(test_data.X > ID_lower, test_data.X < ID_upper)]
+	in_mu = mu[np.logical_and(test_data.X > ID_lower, test_data.X < ID_upper)]
+	in_al = aleatoric[np.logical_and(test_data.X > ID_lower, test_data.X < ID_upper)]
 	pcdf = get_predicted_cdf(residuals=in_mu - in_YZ, sigma=np.diagonal(in_al, axis1=-2, axis2=-1))
 	
 	pcal = []

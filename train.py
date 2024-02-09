@@ -27,11 +27,13 @@ if __name__ == "__main__":
 	print(f"Working on {device}!")
 	EPOCHS = 120
 
-	in_lower = -2.0
-	in_upper = 10.0
+	ID_lower = -2.0
+	ID_upper = 10.0
+	OOD_lower = -10.0
+	OOD_upper = 20.0
 
-	train_data = UnivariateDummyData(N=2000, X_range=(in_lower, in_upper))
-	test_data  = UnivariateDummyData(N=100, X_range=(-10.0, 20.0))
+	train_data = UnivariateDummyData(N=2000, X_range=(ID_lower, ID_upper))
+	test_data  = UnivariateDummyData(N=100, X_range=(OOD_lower, OOD_upper))
 
 	train_loader = torch.utils.data.DataLoader(train_data, batch_size=128, shuffle=True)
 	test_loader = torch.utils.data.DataLoader(test_data, batch_size=32)
@@ -83,8 +85,8 @@ if __name__ == "__main__":
 	plt.scatter(test_data.X, test_data.Y, marker="+", color="black")
 
 	# plot in-distribution limits
-	plt.plot([in_lower, in_lower], [-20, 20], color="grey", linestyle="dotted")
-	plt.plot([in_upper, in_upper], [-20, 20], color="grey", linestyle="dotted")
+	plt.plot([ID_lower, ID_lower], [-20, 20], color="grey", linestyle="dotted")
+	plt.plot([ID_upper, ID_upper], [-20, 20], color="grey", linestyle="dotted")
 
 	# plot aleatoric and epistemic uncertainty on top of each other
 	plt.fill_between(test_data.X, (mu - aleatoric).squeeze(), (mu + aleatoric).squeeze(), color="#8a2be280", linewidth=0, label="$\mathbb{E}[\sigma^2]$ (aleatoric)")
@@ -113,7 +115,7 @@ if __name__ == "__main__":
 
 	""" Creating and plotting calibration plots
 	"""
-	mask = np.logical_and(test_data.X > in_lower, test_data.X < in_upper)
+	mask = np.logical_and(test_data.X > ID_lower, test_data.X < ID_upper)
 	in_Y = test_data.Y[mask]
 	in_mu = mu[mask]
 	in_al = aleatoric[mask]
