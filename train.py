@@ -46,11 +46,11 @@ if __name__ == "__main__":
 	    "amsgrad": False}
 
 	net = UnivariateDerNet()
-	net.to(device)
 	criterion = UnivariateEvidentialRegressionLoss()
 
 	# net = UnivariateKenNet()
 	# criterion = UnivariateL1Loss()
+	net.to(device)
 
 	device = get_device()
 	optimizer = torch.optim.AdamW(net.parameters(), **optimizer_params)
